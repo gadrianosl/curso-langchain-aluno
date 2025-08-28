@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 import os
 import openai
 
@@ -6,13 +6,20 @@ import openai
 def load_env_direct():
     env_vars = {}
     try:
-        with open('.env', 'r') as f:
+        # Tenta primeiro na pasta atual
+        env_path = '.env'
+        if not os.path.exists(env_path):
+            # Se não encontrar, tenta na pasta raiz
+            env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
+        
+        with open(env_path, 'r') as f:
             for line in f:
                 line = line.strip()
                 if line and not line.startswith('#') and '=' in line:
                     key, value = line.split('=', 1)
                     env_vars[key] = value
-    except Exception:
+    except Exception as e:
+        print(f"Erro ao ler .env: {e}")
         pass
     return env_vars
 
@@ -33,4 +40,4 @@ try:
     )
     print(response.choices[0].message.content)
 except Exception as e:
-    print(f"❌ Erro ao chamar a API OpenAI: {e}")
+    print("❌ Erro ao chamar a API OpenAI: %s" % e)
